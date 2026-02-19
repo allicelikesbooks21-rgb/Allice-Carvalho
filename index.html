@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Typing Game - Jury Edition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f4f4f4;
+            padding: 40px;
+        }
+
+        #quote {
+            font-size: 18px;
+            margin: 20px auto;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.5;
+        }
+
+        #input {
+            width: 70%;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .incorrect {
+            color: red;
+            background-color: #ffd6d6;
+        }
+
+        #stats {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Typing Speed Game – Jury Argument Practice</h1>
+    <div id="quote"></div>
+    <input type="text" id="input" placeholder="Start typing here..." autofocus>
+
+    <div id="stats">
+        ⏱ Time: <span id="time">0</span>s |
+        ⚡ WPM: <span id="wpm">0</span> |
+        🎯 Accuracy: <span id="accuracy">100</span>%
+    </div>
+
+    <button onclick="startGame()">Restart</button>
+
+<script>
+
+const quote = `I’d like to emphasize to the jury, that when you choose to not vote for Adnan, you vote for something terribly more damaging, you are now choosing to vote for discrimination, and having a teenage boy free from such sin of murder pay for the action of the man in which is certainly guilty under law. We as the defense know that someone committed this crime and owes Hae and her family time in jail, this person is not Adnan, Adnan would be paying with something he can’t have back, which is time. I’d like to remind that the power to fix the broken judicial system belongs to the people. And so, we would like to ask the jury that if any of you obtain a single doubt that Adnan didn’t commit such crime, we ask you to deeply reflect on the weight of your vote, and to vote wisely as the jury.`;
+
+let startTime;
+let timerInterval;
+
+function startGame() {
+    document.getElementById("quote").innerHTML = highlightText("", quote);
+    document.getElementById("input").value = "";
+    document.getElementById("time").innerText = "0";
+    document.getElementById("wpm").innerText = "0";
+    document.getElementById("accuracy").innerText = "100";
+    startTime = null;
+    clearInterval(timerInterval);
+}
+
+function highlightText(input, quoteText) {
+    let result = "";
+    for (let i = 0; i < quoteText.length; i++) {
+        if (i < input.length) {
+            if (input[i] === quoteText[i]) {
+                result += `<span class="correct">${quoteText[i]}</span>`;
+            } else {
+                result += `<span class="incorrect">${quoteText[i]}</span>`;
+            }
+        } else {
+            result += quoteText[i];
+        }
+    }
+    return result;
+}
+
+document.getElementById("input").addEventListener("input", function() {
+
+    if (!startTime) {
+        startTime = new Date();
+        timerInterval = setInterval(updateTime, 1000);
+    }
+
+    const inputText = this.value;
+    document.getElementById("quote").innerHTML = highlightText(inputText, quote);
+
+    calculateStats(inputText);
+
+    if (inputText === quote) {
+        clearInterval(timerInterval);
+        alert("🎉 Argument Completed!");
+    }
+});
+
+function updateTime() {
+    const currentTime = new Date();
+    const seconds = Math.floor((currentTime - startTime) / 1000);
+    document.getElementById("time").innerText = seconds;
+}
+
+function calculateStats(inputText) {
+    const correctChars = inputText.split("").filter((char, i) => char === quote[i]).length;
+    const accuracy = inputText.length > 0 
+        ? Math.round((correctChars / inputText.length) * 100)
+        : 100;
+
+    const timeElapsed = (new Date() - startTime) / 1000 / 60;
+    const wpm = timeElapsed > 0 
+        ? Math.round((inputText.length / 5) / timeElapsed)
+        : 0;
+
+    document.getElementById("accuracy").innerText = accuracy;
+    document.getElementById("wpm").innerText = wpm;
+}
+
+startGame();
+
+</script>
+
+</body>
+</html>
